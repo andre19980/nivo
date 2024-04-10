@@ -8,10 +8,11 @@
  */
 import { useCallback, useMemo, useState, useId } from 'react'
 import { area, line } from 'd3-shape'
-import { curveFromProp, useTheme, useValueFormatter } from '@nivo/core'
+import { curveFromProp, useTheme, useValueFormatter, Dimensions } from '@nivo/core'
 import { useOrdinalColorScale, useInheritedColor } from '@nivo/colors'
 import { computeXYScalesForSeries } from '@nivo/scales'
 import { LineDefaultProps } from './props'
+import { Datum, LineDataProps, LineProps, LineSvgProps } from './types'
 
 export const useLineGenerator = ({ curve }) => {
     return useMemo(
@@ -139,21 +140,39 @@ export const useSlices = ({ componentId, enableSlices, points, width, height }) 
     }, [componentId, enableSlices, height, points, width])
 }
 
-export const useLine = ({
-    data,
-    xScale: xScaleSpec = LineDefaultProps.xScale,
-    xFormat,
-    yScale: yScaleSpec = LineDefaultProps.yScale,
-    yFormat,
-    width,
-    height,
-    colors = LineDefaultProps.colors,
-    curve = LineDefaultProps.curve,
-    areaBaselineValue = LineDefaultProps.areaBaselineValue,
-    pointColor = LineDefaultProps.pointColor,
-    pointBorderColor = LineDefaultProps.pointBorderColor,
-    enableSlices = LineDefaultProps.enableSlicesTooltip,
-}) => {
+type useLineProps<RawDatum extends Datum> = {
+    data: LineDataProps<RawDatum>['data']
+    xScale: LineProps<RawDatum>['xScale']
+    xFormat?: LineProps<RawDatum>['xFormat']
+    yScale: LineProps<RawDatum>['yScale']
+    yFormat?: LineProps<RawDatum>['yFormat']
+    width: Dimensions['width']
+    height: Dimensions['height']
+    colors: LineProps<RawDatum>['colors']
+    curve: LineProps<RawDatum>['curve']
+    areaBaselineValue: LineProps<RawDatum>['areaBaselineValue']
+    pointColor: LineProps<RawDatum>['pointColor']
+    pointBorderColor: LineProps<RawDatum>['pointBorderColor']
+    enableSlices?: LineProps<RawDatum>['enableSlices']
+}
+
+export const useLine = <RawDatum extends Datum>(props: useLineProps<RawDatum>) => {
+    const {
+        data,
+        xScale: xScaleSpec = LineDefaultProps.xScale,
+        xFormat,
+        yScale: yScaleSpec = LineDefaultProps.yScale,
+        yFormat,
+        width,
+        height,
+        colors = LineDefaultProps.colors,
+        curve = LineDefaultProps.curve,
+        areaBaselineValue = LineDefaultProps.areaBaselineValue,
+        pointColor = LineDefaultProps.pointColor,
+        pointBorderColor = LineDefaultProps.pointBorderColor,
+        enableSlices,
+    } = props
+
     const componentId = useId()
     const formatX = useValueFormatter(xFormat)
     const formatY = useValueFormatter(yFormat)
@@ -161,7 +180,7 @@ export const useLine = ({
     const theme = useTheme()
     const getPointColor = useInheritedColor(pointColor, theme)
     const getPointBorderColor = useInheritedColor(pointBorderColor, theme)
-    const [hiddenIds, setHiddenIds] = useState([])
+    const [hiddenIds, setHiddenIds] = useState<Array<string | number>>([])
 
     const {
         xScale,
@@ -169,7 +188,7 @@ export const useLine = ({
         series: rawSeries,
     } = useMemo(
         () =>
-            computeXYScalesForSeries(
+            computeXYScalesForSeries<{ id: string | number }, RawDatum>(
                 data.filter(item => hiddenIds.indexOf(item.id) === -1),
                 xScaleSpec,
                 yScaleSpec,
@@ -198,7 +217,7 @@ export const useLine = ({
         return { legendData, series }
     }, [data, rawSeries, getColor])
 
-    const toggleSerie = useCallback(id => {
+    const toggleSerie = useCallback((id: string | number) => {
         setHiddenIds(state =>
             state.indexOf(id) > -1 ? state.filter(item => item !== id) : [...state, id]
         )

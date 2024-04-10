@@ -13,6 +13,8 @@ import { axisPropType } from '@nivo/axes'
 import { LegendPropShape } from '@nivo/legends'
 import PointTooltip from './PointTooltip'
 import SliceTooltip from './SliceTooltip'
+import { OrdinalColorScaleConfig } from '@nivo/colors'
+import { ScaleSpec } from '@nivo/scales'
 
 const commonPropTypes = {
     data: PropTypes.arrayOf(
@@ -58,15 +60,15 @@ const commonPropTypes = {
         ])
     ).isRequired,
 
-    curve: lineCurvePropType.isRequired,
+    curve: lineCurvePropType,
 
     axisTop: axisPropType,
     axisRight: axisPropType,
     axisBottom: axisPropType,
     axisLeft: axisPropType,
 
-    enableGridX: PropTypes.bool.isRequired,
-    enableGridY: PropTypes.bool.isRequired,
+    enableGridX: PropTypes.bool,
+    enableGridY: PropTypes.bool,
     gridXValues: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.arrayOf(
@@ -80,66 +82,66 @@ const commonPropTypes = {
         ),
     ]),
 
-    enablePoints: PropTypes.bool.isRequired,
+    enablePoints: PropTypes.bool,
     pointSymbol: PropTypes.func,
-    pointSize: PropTypes.number.isRequired,
-    pointColor: PropTypes.any.isRequired,
-    pointBorderWidth: PropTypes.number.isRequired,
-    pointBorderColor: PropTypes.any.isRequired,
-    enablePointLabel: PropTypes.bool.isRequired,
-    pointLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
+    pointSize: PropTypes.number,
+    pointColor: PropTypes.any,
+    pointBorderWidth: PropTypes.number,
+    pointBorderColor: PropTypes.any,
+    enablePointLabel: PropTypes.bool,
+    pointLabel: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
 
     markers: PropTypes.arrayOf(
         PropTypes.shape({
-            axis: PropTypes.oneOf(['x', 'y']).isRequired,
+            axis: PropTypes.oneOf(['x', 'y']),
             value: PropTypes.oneOfType([
                 PropTypes.number,
                 PropTypes.string,
                 PropTypes.instanceOf(Date),
-            ]).isRequired,
+            ]),
             style: PropTypes.object,
         })
     ),
 
-    colors: ordinalColorsPropType.isRequired,
+    colors: ordinalColorsPropType,
 
-    enableArea: PropTypes.bool.isRequired,
-    areaOpacity: PropTypes.number.isRequired,
-    areaBlendMode: blendModePropType.isRequired,
+    enableArea: PropTypes.bool,
+    areaOpacity: PropTypes.number,
+    areaBlendMode: blendModePropType,
     areaBaselineValue: PropTypes.oneOfType([
         PropTypes.number,
         PropTypes.string,
         PropTypes.instanceOf(Date),
-    ]).isRequired,
-    lineWidth: PropTypes.number.isRequired,
+    ]),
+    lineWidth: PropTypes.number,
 
-    legends: PropTypes.arrayOf(PropTypes.shape(LegendPropShape)).isRequired,
+    legends: PropTypes.arrayOf(PropTypes.shape(LegendPropShape)),
 
-    isInteractive: PropTypes.bool.isRequired,
-    debugMesh: PropTypes.bool.isRequired,
+    isInteractive: PropTypes.bool,
+    debugMesh: PropTypes.bool,
 
-    tooltip: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired,
+    tooltip: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
 
-    enableSlices: PropTypes.oneOf(['x', 'y', false]).isRequired,
-    debugSlices: PropTypes.bool.isRequired,
-    sliceTooltip: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired,
+    enableSlices: PropTypes.oneOf(['x', 'y', false]),
+    debugSlices: PropTypes.bool,
+    sliceTooltip: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
 
-    enableCrosshair: PropTypes.bool.isRequired,
-    crosshairType: PropTypes.string.isRequired,
+    enableCrosshair: PropTypes.bool,
+    crosshairType: PropTypes.string,
 }
 
 export const LinePropTypes = {
     ...commonPropTypes,
-    enablePointLabel: PropTypes.bool.isRequired,
-    role: PropTypes.string.isRequired,
-    useMesh: PropTypes.bool.isRequired,
+    enablePointLabel: PropTypes.bool,
+    role: PropTypes.string,
+    useMesh: PropTypes.bool,
     enableTouchCrosshair: PropTypes.bool,
     ...motionPropTypes,
     ...defsPropTypes,
 }
 
 export const LineCanvasPropTypes = {
-    pixelRatio: PropTypes.number.isRequired,
+    pixelRatio: PropTypes.number,
     ...commonPropTypes,
 }
 
@@ -148,12 +150,12 @@ const commonDefaultProps = {
 
     xScale: {
         type: 'point',
-    },
+    } as ScaleSpec,
     yScale: {
         type: 'linear',
         min: 0,
         max: 'auto',
-    },
+    } as ScaleSpec,
 
     layers: [
         'grid',
@@ -180,7 +182,7 @@ const commonDefaultProps = {
     enablePointLabel: false,
     pointLabel: 'yFormatted',
 
-    colors: { scheme: 'nivo' },
+    colors: { scheme: 'nivo' } as OrdinalColorScaleConfig,
     enableArea: false,
     areaBaselineValue: 0,
     areaOpacity: 0.2,

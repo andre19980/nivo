@@ -6,14 +6,16 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { createElement, useRef, useEffect, useState, useCallback, forwardRef } from 'react'
 import {
-    withContainer,
-    useDimensions,
-    useTheme,
-    getRelativeCursor,
-    isCursorInRect,
-} from '@nivo/core'
+    createElement,
+    useRef,
+    useEffect,
+    useState,
+    useCallback,
+    forwardRef,
+    ForwardedRef,
+} from 'react'
+import { Container, useDimensions, useTheme, getRelativeCursor, isCursorInRect } from '@nivo/core'
 import { renderAxesToCanvas, renderGridLinesToCanvas } from '@nivo/axes'
 import { renderLegendToCanvas } from '@nivo/legends'
 import { useTooltip } from '@nivo/tooltip'
@@ -22,7 +24,16 @@ import { LineCanvasPropTypes } from './props'
 import { useLine } from './hooks'
 import PointTooltip from './PointTooltip'
 
-const LineCanvas = props => {
+import { Datum, LineCanvasProps } from './types'
+
+type LineCanvasPropsComponent<RawDatum extends Datum> = Omit<
+    LineCanvasProps<RawDatum>,
+    'renderWrapper' | 'theme'
+> & {
+    canvasRef: ForwardedRef<HTMLCanvasElement>
+}
+
+const LineCanvas = <RawDatum extends Datum>(props: LineCanvasPropsComponent<RawDatum>) => {
     const canvasEl = useRef(null)
     const {
         width,
@@ -345,8 +356,13 @@ const LineCanvas = props => {
     )
 }
 
-LineCanvas.propTypes = LineCanvasPropTypes
-
-const LineCanvasWithContainer = withContainer(LineCanvas)
-
-export default forwardRef((props, ref) => <LineCanvasWithContainer {...props} canvasRef={ref} />)
+export default forwardRef(
+    <RawDatum extends Datum>(
+        { isInteractive, renderWrapper, theme, ...props }: LineCanvasProps<RawDatum>,
+        ref: ForwardedRef<HTMLCanvasElement>
+    ) => (
+        <Container {...{ isInteractive, renderWrapper, theme }} animate={false}>
+            <LineCanvas<RawDatum> {...props} canvasRef={ref} />
+        </Container>
+    )
+)

@@ -6,14 +6,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-import { forwardRef } from 'react'
 import { ResponsiveWrapper } from '@nivo/core'
-import LineCanvas from './LineCanvas'
+import Line from './Line'
 
-const ResponsiveLineCanvas = (props, ref) => (
+import { Datum, LineSvgProps } from './types'
+
+const ResponsiveLine = <RawDatum extends Datum>(
+    props: Omit<LineSvgProps<RawDatum>, 'width' | 'height'>
+) => (
     <ResponsiveWrapper>
-        {({ width, height }) => <LineCanvas width={width} height={height} {...props} ref={ref} />}
+        {({ width, height }) => <Line<RawDatum> width={width} height={height} {...props} />}
     </ResponsiveWrapper>
 )
 
-export default forwardRef(ResponsiveLineCanvas)
+export default ResponsiveLine

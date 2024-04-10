@@ -20,7 +20,6 @@ import { Axes, Grid } from '@nivo/axes'
 import { BoxLegendSvg } from '@nivo/legends'
 import { Crosshair } from '@nivo/tooltip'
 import { useLine } from './hooks'
-import { LinePropTypes } from './props'
 import Areas from './Areas'
 import Lines from './Lines'
 import Slices from './Slices'
@@ -29,7 +28,14 @@ import Mesh from './Mesh'
 import PointTooltip from './PointTooltip'
 import SliceTooltip from './SliceTooltip'
 
-const Line = props => {
+import { Datum, LineSvgProps } from './types'
+
+type LineComponentProps<RawDatum extends Datum> = Omit<
+    LineSvgProps<RawDatum>,
+    'animate' | 'motionConfig' | 'renderWrapper' | 'theme'
+>
+
+const Line = <RawDatum extends Datum>(props: LineComponentProps<RawDatum>) => {
     const {
         data,
         xScale: xScaleSpec = { type: 'point' },
@@ -73,7 +79,6 @@ const Line = props => {
         lineWidth = 2,
         enableArea = false,
         areaOpacity = 0.2,
-        areaBlendMode = 'normal',
 
         enablePoints = true,
         pointSymbol,
@@ -81,9 +86,14 @@ const Line = props => {
         pointColor = { from: 'color' },
         pointBorderWidth = 0,
         pointBorderColor = { theme: 'background' },
+
+        // line svg props
         enablePointLabel = false,
         pointLabel = 'yFormatted',
         pointLabelYOffset,
+        areaBlendMode = 'normal',
+        role = 'img',
+        useMesh = false,
 
         defs = [],
         fill = [],
@@ -94,7 +104,6 @@ const Line = props => {
 
         isInteractive = true,
 
-        useMesh = false,
         debugMesh = false,
 
         onMouseEnter,
@@ -114,8 +123,6 @@ const Line = props => {
         enableCrosshair = true,
         crosshairType = 'bottom-left',
         enableTouchCrosshair = false,
-
-        role = 'img',
     } = props
 
     const { margin, innerWidth, innerHeight, outerWidth, outerHeight } = useDimensions(
@@ -134,7 +141,7 @@ const Line = props => {
         yScale,
         slices,
         points,
-    } = useLine({
+    } = useLine<RawDatum>({
         data,
         xScale: xScaleSpec,
         xFormat,
@@ -357,7 +364,5 @@ const Line = props => {
         </SvgWrapper>
     )
 }
-
-Line.propTypes = LinePropTypes
 
 export default withContainer(Line)
